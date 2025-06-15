@@ -495,7 +495,7 @@ static int SDLCALL mouse_warpMouseInWindow(void *arg)
         for (j = 0; j < numPositions; j++) {
             x = xPositions[i];
             y = yPositions[j];
-            unsigned int warpWindowId = SDL_GetWindowID(window);
+            SDL_WindowID warpWindowId = SDL_GetWindowID(window);
             SDLTest_AssertPass("SDL_GetWindowID(window)");
             SDL_WarpMouseInWindow(window, x, y);
             SDLTest_AssertPass("SDL_WarpMouseInWindow(...,%.f,%.f)", x, y);
