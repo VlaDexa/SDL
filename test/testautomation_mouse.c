@@ -509,11 +509,11 @@ static int SDLCALL mouse_warpMouseInWindow(void *arg)
             if (!has_event) {
                 continue;
             }
-            SDLTest_AssertCheck(event.type == SDL_EVENT_MOUSE_MOTION, "Expected a mouse motion event after mouse warp, got %u", event.type);
+            SDLTest_AssertCheck(event.type == SDL_EVENT_MOUSE_MOTION, "Expected a mouse motion event after mouse warp, got %" SDL_PRIu32, event.type);
             if (event.type != SDL_EVENT_MOUSE_MOTION) {
                 continue;
             }
-            SDLTest_AssertCheck(event.motion.windowID == warpWindowId, "Got a mouse motion event from a different window, expected %u, got %u", warpWindowId, event.motion.windowID);
+            SDLTest_AssertCheck(event.motion.windowID == warpWindowId, "Got a mouse motion event from a different window, expected %" SDL_PRIu32 ", got %" SDL_PRIu32, warpWindowId, event.motion.windowID);
             SDLTest_AssertCheck(event.motion.x == x, "Expected mouse moved to x=%f, got an event signaling move to x=%f", x, event.motion.x);
             SDLTest_AssertCheck(event.motion.y == y, "Expected mouse moved to y=%f, got an event signaling move to y=%f", y, event.motion.y);
         }
