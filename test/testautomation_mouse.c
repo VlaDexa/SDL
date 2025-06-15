@@ -481,17 +481,41 @@ static int SDLCALL mouse_warpMouseInWindow(void *arg)
     SDL_WarpMouseInWindow(window, x, y);
     SDLTest_AssertPass("SDL_WarpMouseInWindow(...,%.f,%.f)", x, y);
 
+    /* Empty the event queue */
+    /* TODO: add tracking of events and check that each call generates a mouse motion event */
+    SDL_Event event;
+    SDL_zero(event);
+    while (SDL_PollEvent(&event)) {
+        SDLTest_AssertPass("SDL_PollEvent(...)");
+    }
+    SDL_zero(event);
+
     /* Mouse to various boundary positions */
     for (i = 0; i < numPositions; i++) {
         for (j = 0; j < numPositions; j++) {
             x = xPositions[i];
             y = yPositions[j];
+            unsigned int warpWindowId = SDL_GetWindowID(window);
+            SDLTest_AssertPass("SDL_GetWindowID(window)");
             SDL_WarpMouseInWindow(window, x, y);
             SDLTest_AssertPass("SDL_WarpMouseInWindow(...,%.f,%.f)", x, y);
 
-            /* TODO: add tracking of events and check that each call generates a mouse motion event */
             SDL_PumpEvents();
             SDLTest_AssertPass("SDL_PumpEvents()");
+
+            bool has_event = SDL_PollEvent(&event);
+            SDLTest_AssertPass("SDL_PollEvent(event)");
+            SDLTest_AssertCheck(has_event, "Expected an event in queue after mouse warp");
+            if (!has_event) {
+                continue;
+            }
+            SDLTest_AssertCheck(event.type == SDL_EVENT_MOUSE_MOTION, "Expected a mouse motion event after mouse warp, got %u", event.type);
+            if (event.type != SDL_EVENT_MOUSE_MOTION) {
+                continue;
+            }
+            SDLTest_AssertCheck(event.motion.windowID == warpWindowId, "Got a mouse motion event from a different window, expected %u, got %u", warpWindowId, event.motion.windowID);
+            SDLTest_AssertCheck(event.motion.x == x, "Expected mouse moved to x=%f, got an event signaling move to x=%f", x, event.motion.x);
+            SDLTest_AssertCheck(event.motion.y == y, "Expected mouse moved to y=%f, got an event signaling move to y=%f", y, event.motion.y);
         }
     }
 
